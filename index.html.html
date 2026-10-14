@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f5ef">
+<title>Насколько тебя устраивает твоя жизнь?</title>
+<style>
+:root{--bg:#f7f5ef;--card:#fffefa;--ink:#252b2a;--muted:#6d7470;--line:#e5e3da;--accent:#526b5b;--accent2:#e5ece4;--warm:#f1e4d7}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:28px 16px 56px}
+.top{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:750;margin:4px 0 22px}
+.hero{padding:30px 26px;background:#e9eee7;border-radius:24px;margin-bottom:18px}
+.eyebrow{font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.04em}
+h1{font-size:clamp(29px,6vw,44px);line-height:1.08;letter-spacing:-.04em;margin:10px 0 14px;max-width:620px}
+p{margin:0 0 12px}.lead{color:#4f5852;max-width:590px}
+.meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.pill{border:1px solid #d5ded4;border-radius:999px;padding:6px 11px;font-size:12px;color:#526357;background:#f5f7f2}
+.progressbox{margin:18px 0 14px}
+.progresstext{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:8px}
+.track{height:6px;background:#e6e3da;border-radius:99px;overflow:hidden}.bar{height:100%;width:0;background:var(--accent);transition:width .2s}
+.question{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;margin:12px 0}
+.qhead{font-size:12px;color:var(--accent);font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}
+h2{font-size:19px;line-height:1.35;margin:0 0 16px;letter-spacing:-.015em}
+.options{display:grid;gap:9px}
+.option{display:flex;align-items:center;gap:11px;border:1px solid var(--line);border-radius:12px;padding:12px 13px;cursor:pointer;transition:.15s;background:white}
+.option:hover{border-color:#a8b7a8;background:#fbfcf8}
+.option:has(input:checked){border-color:var(--accent);background:var(--accent2)}
+.option input{accent-color:var(--accent);width:17px;height:17px;flex-shrink:0}
+.option span{font-size:15px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}
+button,.button{border:0;border-radius:999px;padding:14px 20px;font:inherit;font-weight:750;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.primary{background:var(--accent);color:white}.primary:hover{background:#3f5547}
+.secondary{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.error{display:none;color:#9a3f2f;background:#f8e8e2;padding:12px 14px;border-radius:12px;margin:12px 0}
+.result{display:none;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:28px;margin-top:18px}
+.scoreline{font-size:13px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.score{font-size:54px;line-height:1.15;font-weight:800;letter-spacing:-.05em;margin:7px 0 4px}
+.result h2{font-size:25px;margin:12px 0}
+.result p{color:#505852}
+.result-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.note{font-size:12px;color:var(--muted);margin-top:18px}
+footer{text-align:center;color:var(--muted);font-size:12px;margin-top:28px}
+a{color:inherit}
+@media(max-width:520px){.hero{padding:24px 19px}.question{padding:18px}.result{padding:22px}.actions button{width:100%}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="top">Моя лучшая реальность</div>
+  <section class="hero">
+    <div class="eyebrow">ТЕСТ ДЛЯ САМОРЕФЛЕКСИИ · 3–5 МИНУТ</div>
+    <h1>Насколько тебя устраивает твоя жизнь?</h1>
+    <p class="lead">Ответь честно, ориентируясь на то, как ты чувствовал(а) себя в последние несколько недель. Здесь нет правильных и неправильных ответов — только возможность лучше понять себя.</p>
+    <div class="meta"><span class="pill">10 вопросов</span><span class="pill">Без регистрации</span><span class="pill">Результат сразу</span></div>
+  </section>
+  <div class="progressbox">
+    <div class="progresstext"><span id="progressLabel">Отвечено: 0 из 10</span><span id="progressPct">0%</span></div>
+    <div class="track"><div class="bar" id="bar"></div></div>
+  </div>
+  <form id="quiz">
+    <div id="questions"></div>
+    <div class="error" id="error">Ответь, пожалуйста, на все 10 вопросов — тогда я смогу показать результат.</div>
+    <div class="actions"><button class="primary" type="submit">Узнать результат →</button><button class="secondary" type="button" id="reset">Начать заново</button></div>
+  </form>
+  <section class="result" id="result" aria-live="polite">
+    <div class="scoreline">Твой результат</div>
+    <div class="score"><span id="score">0</span><span style="font-size:20px;color:#7a817b;font-weight:600"> / 30</span></div>
+    <h2 id="resultTitle"></h2>
+    <p id="resultText"></p>
+    <p id="resultAdvice"></p>
+    <div class="result-actions" id="resultActions"></div>
+    <div class="note">Этот тест — инструмент саморефлексии, а не психологическая диагностика. Результат не определяет тебя и не заменяет помощь специалиста.</div>
+  </section>
+  <footer>Отвечай так, как есть сейчас. Твоя точка отсчёта — не чужая жизнь, а твоя собственная.</footer>
+</main>
+<script>
+const questions = [
+ {q:"В целом, насколько тебя устраивает твоя жизнь сейчас?",a:["Полностью или почти полностью","Скорее устраивает","Скорее не устраивает","Совсем не устраивает"]},
+ {q:"Как часто ты чувствуешь, что живёшь так, как действительно хочешь?",a:["Почти всегда","Довольно часто","Редко","Почти никогда"]},
+ {q:"Насколько тебе хватает сил на важные для тебя вещи?",a:["Сил хватает","Обычно хватает","Часто не хватает","Почти постоянно не хватает"]},
+ {q:"Как часто тревога мешает тебе отдыхать или наслаждаться моментом?",a:["Почти никогда","Иногда","Часто","Почти каждый день"]},
+ {q:"Насколько свободно ты принимаешь решения, не ориентируясь постоянно на чужое мнение?",a:["Достаточно свободно","Чаще свободно, чем нет","Часто оглядываюсь на других","Чужое мнение сильно мной управляет"]},
+ {q:"Как ты ощущаешь своё будущее?",a:["С интересом и надеждой","С осторожным оптимизмом","С сомнением и напряжением","С тревогой или безнадёжностью"]},
+ {q:"Как часто ты откладываешь важное для себя из-за страха ошибки или осуждения?",a:["Почти никогда","Иногда","Часто","Почти всегда"]},
+ {q:"Насколько тебе хватает близости, поддержки и людей, с которыми можно быть собой?",a:["Мне хватает","В целом хватает","Мне часто этого не хватает","Я часто чувствую себя одиноко"]},
+ {q:"Как часто ты замечаешь, что критикуешь себя вместо того, чтобы поддержать?",a:["Редко","Иногда","Часто","Почти постоянно"]},
+ {q:"Насколько твои повседневные действия приближают тебя к жизни, которую ты хочешь?",a:["Я чувствую, что двигаюсь в нужную сторону","Есть движение, но не всегда","Часто топчусь на месте","Почти не двигаюсь к тому, что важно"]}
+];
+const root=document.getElementById('questions');
+questions.forEach((item,i)=>{
+ const section=document.createElement('section');section.className='question';
+ const title=document.createElement('h2');title.textContent=item.q;
+ const head=document.createElement('div');head.className='qhead';head.textContent=`Вопрос ${i+1} из 10`;
+ const opts=document.createElement('div');opts.className='options';
+ item.a.forEach((label,j)=>{
+   const lab=document.createElement('label');lab.className='option';
+   const input=document.createElement('input');input.type='radio';input.name=`q${i}`;input.value=String(j);input.required=true;
+   const text=document.createElement('span');text.textContent=label;
+   lab.append(input,text);opts.append(lab);
+ });
+ section.append(head,title,opts);root.append(section);
+});
+function updateProgress(){
+ let n=0;questions.forEach((_,i)=>{if(document.querySelector(`input[name="q${i}"]:checked`))n++});
+ document.getElementById('progressLabel').textContent=`Отвечено: ${n} из 10`;
+ document.getElementById('progressPct').textContent=`${n*10}%`;
+ document.getElementById('bar').style.width=`${n*10}%`;
+}
+document.getElementById('quiz').addEventListener('change',updateProgress);
+document.getElementById('quiz').addEventListener('submit',e=>{
+ e.preventDefault();
+ let score=0,answered=0;
+ questions.forEach((_,i)=>{const picked=document.querySelector(`input[name="q${i}"]:checked`);if(picked){score+=Number(picked.value);answered++}});
+ const err=document.getElementById('error');
+ if(answered!==10){err.style.display='block';document.querySelector('.question input:not(:checked)')?.focus();return}
+ err.style.display='none';
+ document.getElementById('score').textContent=score;
+ let title,txt,advice,cta;
+ if(score<=9){
+  title='Похоже, у тебя есть внутренняя опора';
+  txt='По твоим ответам сейчас в жизни немало того, что тебя устраивает. Это не значит, что трудностей нет, — скорее, у тебя получается справляться с ними или сохранять контакт с тем, что важно.';
+  advice='Это хороший результат. Попробуй заметить, что именно делает твою жизнь подходящей для тебя: какие привычки, решения и люди поддерживают тебя. Сохраняй то, что работает, и постепенно добавляй в жизнь то, чего тебе хочется.';
+  cta='channel';
+ }else if(score<=19){
+  title='Есть области, которым стоит уделить внимание';
+  txt='В твоих ответах заметно некоторое напряжение или неудовлетворённость. Возможно, часть сил уходит на тревоги, ожидания окружающих или внутреннюю критику.';
+  advice='На 15-минутной консультации-диагностике со мной мы разберём, что может стоять за этим состоянием, что происходит именно в твоей ситуации и какой следующий шаг будет разумным. Без необходимости сразу менять всю жизнь.';
+  cta='consult';
+ }else{
+  title='Похоже, тебе сейчас непросто';
+  txt='Твои ответы указывают на заметную неудовлетворённость несколькими сторонами жизни. Это не оценка тебя как человека и не приговор — это сигнал отнестись к своему состоянию внимательнее.';
+  advice='Приглашаю тебя на 15-минутную консультацию-диагностику со мной. Мы спокойно разберём, что могло привести к такому состоянию, что именно сейчас мешает и какие варианты дальнейших действий есть в твоей ситуации. Это короткая первая встреча, чтобы наметить направление, а не обещание решить всё за 15 минут.';
+  cta='consult';
+ }
+ document.getElementById('resultTitle').textContent=title;
+ document.getElementById('resultText').textContent=txt;
+ document.getElementById('resultAdvice').textContent=advice;
+ const actions=document.getElementById('resultActions');actions.innerHTML='';
+ if(cta==='channel'){
+  const a=document.createElement('a');a.className='button primary';a.href='https://t.me/svojaghizn';a.target='_blank';a.rel='noopener';a.textContent='Перейти в мой Telegram-канал';actions.append(a);
+  const p=document.createElement('p');p.className='note';p.textContent='В канале «Своя жизнь» — материалы о мышлении, тревоге и том, как менять свою реальность.';actions.append(p);
+ }else{
+  const a=document.createElement('a');a.className='button primary';a.href='https://t.me/And_Pashkovskiy';a.target='_blank';a.rel='noopener';a.textContent='Записаться на 15-минутную диагностику';actions.append(a);
+  const p=document.createElement('p');p.className='note';p.textContent='Нажми на кнопку и напиши мне в Telegram слово «ДИАГНОСТИКА». Мы разберём, что происходит и какой следующий шаг можно сделать.';actions.append(p);
+ }
+ document.getElementById('result').style.display='block';
+ document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+});
+document.getElementById('reset').addEventListener('click',()=>{
+ document.getElementById('quiz').reset();document.getElementById('result').style.display='none';document.getElementById('error').style.display='none';updateProgress();window.scrollTo({top:0,behavior:'smooth'});
+});
+</script>
+</body>
+</html>
